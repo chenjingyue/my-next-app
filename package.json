@@ -1,10 +1,13 @@
 {
   "name": "my-hono-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/platforms/server.js",
   "scripts": {
-    "dev": "node server.js",
-    "start": "NODE_ENV=prod node server.js"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "dev:node": "node src/platforms/server.js",
+    "start:node": "NODE_ENV=prod node src/platforms/server.js",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +25,7 @@
     "moment": "^2.30.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "wrangler": "^4.4.0"
   }
 }
