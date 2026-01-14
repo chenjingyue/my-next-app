@@ -1,6 +1,6 @@
 // routes/users.js
-const {Hono} = require("hono");
-const {getUserById, saveUser, userList} = require("../controller/userController");
+import { Hono } from 'hono';
+import  {getUserById, saveUser, userList}  from "../controller/userController.js";
 const router = new Hono();
 
 
@@ -14,4 +14,4 @@ router.get('/:id', getUserById);
 // POST /api/users — 创建新用户
 router.post('/', saveUser);
 
-module.exports = router;
+export default router;

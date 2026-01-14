@@ -1,9 +1,9 @@
 // 引入核心依赖
-const { Hono } = require('hono');
-const { cors } = require('hono/cors');
-const rootRouter = require('../routes');
-const TimeUtil = require("../utils/time");
-const globalErrorHandler = require("../middleware/ErrorHandler"); // Hono内置跨域中间件
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import rootRouter from '../routes/index.js';
+import {getBjDateTime} from "../utils/time.js";
+import globalErrorHandler from "../middleware/ErrorHandler.js"; // Hono内置跨域中间件
 
 
 // 创建Hono实例，等价于Express的 const app = express()
@@ -21,7 +21,7 @@ app.use('*', cors({
 
 // 2. 请求日志中间件 - 打印请求信息+北京时间，方便调试
 app.use('*', async (c, next) => {
-  const startTime = TimeUtil.getBjDateTime();
+  const startTime = getBjDateTime();
   const { method, url } = c.req;
   console.log(`[${startTime}] ${method} -> ${url}`);
   await next(); // 执行后续路由
@@ -41,4 +41,4 @@ app.route('/api', rootRouter);
 // ===== 全局错误处理 =====
 app.onError(globalErrorHandler);
 
-module.exports = app;
+export default app;

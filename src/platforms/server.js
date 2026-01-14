@@ -1,8 +1,20 @@
+// src/platforms/server.js
+import { config } from 'dotenv';
 
+import app from "../app/app.js";
+import { serve } from '@hono/node-server';
+import { setLoggerImpl } from '../utils/log-core.js';
+import { createNodeLogger } from '../utils/log-node.js';
+import { setDB } from '../db/index.js';
+import { getDB } from '../db/sqlite.js';
+
+config();
 process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 
-const app = require("../app/app");
-const { serve } = require('@hono/node-server');
+// 初始化日志器（Node 版本）
+setLoggerImpl(createNodeLogger());
+// 初始化数据库
+setDB(getDB());
 
 const PORT = process.env.PORT || 9990;
 
@@ -13,6 +25,3 @@ serve({
     console.log(`✅ Hono服务启动成功 → http://localhost:${PORT}，当前环境：${process.env.NODE_ENV}`);
 });
 
-// ===================== Cloudflare部署必备 =====================
-// 导出fetch函数，CF会自动识别，无需修改，本地运行不受影响
-module.exports = { fetch: app.fetch };

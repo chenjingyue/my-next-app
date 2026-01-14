@@ -1,4 +1,4 @@
-const logger = require("../utils/logger");
+import {logger} from "../utils/log-core.js";
 
 
 const globalErrorHandler =  (err, c) => {
@@ -35,4 +35,4 @@ const globalErrorHandler =  (err, c) => {
     }
 };
 
-module.exports = globalErrorHandler;
+export default globalErrorHandler;

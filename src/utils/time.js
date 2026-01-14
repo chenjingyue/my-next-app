@@ -1,74 +1,122 @@
+// utils/time.js
 /**
- * 时间格式化工具类 - 全局统一 东八区(北京时间+8)
- * 解决new Date()默认UTC时区问题，适配数据库插入/日志/接口返回等所有场景
+ * 轻量级北京时间工具（兼容 Node.js + Cloudflare Workers）
+ * 不依赖 moment / moment-timezone，使用原生 Intl API
  */
-const moment = require('moment-timezone');
 
-// 全局配置：固定东八区北京时间，永久生效
-moment.tz.setDefault('Asia/Shanghai');
+const BEIJING_TZ = 'Asia/Shanghai';
 
-const TimeUtil = {
-    /**
-     * ✅ 【最常用、推荐】获取当前北京时间 - 数据库插入专用格式
-     * 格式: YYYY-MM-DD HH:mm:ss （你的sqlite数据库datetime字段完美适配）
-     * @returns {String} 例如: 2026-01-14 21:59:59
-     */
-    getBjDateTime() {
-        return moment().format('YYYY-MM-DD HH:mm:ss');
-    },
+function getBeijingDate(date = new Date()) {
+    return new Intl.DateTimeFormat('sv-SE', {
+        timeZone: BEIJING_TZ,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).format(date);
+}
 
-    /**
-     * ✅ 获取当前北京时间 - 仅日期
-     * 格式: YYYY-MM-DD
-     * @returns {String} 例如: 2026-01-14
-     */
-    getBjDate() {
-        return moment().format('YYYY-MM-DD');
-    },
+function getBeijingTime(date = new Date()) {
+    return new Intl.DateTimeFormat('en-GB', {
+        timeZone: BEIJING_TZ,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    }).format(date);
+}
 
-    /**
-     * ✅ 获取当前北京时间 - 仅时间
-     * 格式: HH:mm:ss
-     * @returns {String} 例如: 21:59:59
-     */
-    getBjTime() {
-        return moment().format('HH:mm:ss');
-    },
+function pad(num) {
+    return String(num).padStart(2, '0');
+}
 
-    /**
-     * ✅ 获取当前北京时间 - 带毫秒的完整格式
-     * 格式: YYYY-MM-DD HH:mm:ss.SSS
-     * @returns {String} 例如: 2026-01-14 21:59:59.123
-     */
-    getBjDateTimeWithMs() {
-        return moment().format('YYYY-MM-DD HH:mm:ss.SSS');
-    },
+function padMs(ms) {
+    return String(ms).padStart(3, '0');
+}
 
-    /**
-     * ✅ 传入任意时间，转为北京时间格式
-     * @param {Date|String} time 可以是new Date()对象、UTC时间字符串、任意合法时间格式
-     * @returns {String} 例如: 2026-01-14 21:59:59
-     */
-    formatToBj(time) {
-        return moment(time).format('YYYY-MM-DD HH:mm:ss');
-    },
+/**
+ * ✅ 获取当前北京时间 - YYYY-MM-DD HH:mm:ss
+ */
+function getBjDateTime() {
+    const now = new Date();
+    const datePart = getBeijingDate(now);
+    const timePart = getBeijingTime(now);
+    return `${datePart} ${timePart}`;
+}
 
-    /**
-     * ✅ 获取当前时间戳(毫秒)
-     * @returns {Number}
-     */
-    getTimestamp() {
-        return moment().valueOf();
-    },
+/**
+ * ✅ 获取当前北京时间 - YYYY-MM-DD
+ */
+function getBjDate() {
+    return getBeijingDate();
+}
 
-    /**
-     * ✅ 获取当前时间戳(秒)
-     * @returns {Number}
-     */
-    getUnixTimestamp() {
-        return moment().unix();
-    }
+/**
+ * ✅ 获取当前北京时间 - HH:mm:ss
+ */
+function getBjTime() {
+    return getBeijingTime();
+}
+
+/**
+ * ✅ 获取带毫秒的北京时间 - YYYY-MM-DD HH:mm:ss.SSS
+ */
+function getBjDateTimeWithMs() {
+    const now = new Date();
+    // 使用 toLocaleString 获取基础时间，再手动加毫秒
+    const base = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: BEIJING_TZ,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    }).formatToParts(now);
+
+    // 重组为 YYYY-MM-DD HH:mm:ss
+    const parts = {};
+    base.forEach(({ type, value }) => {
+        parts[type] = value;
+    });
+
+    const dateStr = `${parts.year}-${parts.month}-${parts.day}`;
+    const timeStr = `${parts.hour}:${parts.minute}:${parts.second}`;
+    const ms = padMs(now.getMilliseconds());
+
+    return `${dateStr} ${timeStr}.${ms}`;
+}
+
+/**
+ * ✅ 格式化任意时间为北京时间
+ */
+function formatToBj(time) {
+    const date = new Date(time);
+    const datePart = getBeijingDate(date);
+    const timePart = getBeijingTime(date);
+    return `${datePart} ${timePart}`;
+}
+
+/**
+ * ✅ 时间戳（毫秒）
+ */
+function getTimestamp() {
+    return Date.now();
+}
+
+/**
+ * ✅ Unix 时间戳（秒）
+ */
+function getUnixTimestamp() {
+    return Math.floor(Date.now() / 1000);
+}
+
+export  {
+    getBjDateTime,
+    getBjDate,
+    getBjTime,
+    getBjDateTimeWithMs,
+    formatToBj,
+    getTimestamp,
+    getUnixTimestamp
 };
-
-// 导出工具类，全局可用
-module.exports = TimeUtil;
