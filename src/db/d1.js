@@ -1,4 +1,3 @@
-import AppError from "../utils/AppError.js";
 
 
 function initTables(db) {
@@ -14,6 +13,7 @@ function initTables(db) {
 
 export function getDB(c) {
     // 🌩️ Cloudflare 环境（包括 wrangler dev）
+    console.log("c?.env?.RUNTIME: ",c?.env?.RUNTIME)
     if (c?.env?.RUNTIME === 'cloudflare') {
         const db = c.env.MY_DATABASE;
         if (!globalThis._D1_INIT) {
@@ -21,7 +21,6 @@ export function getDB(c) {
             globalThis._D1_INIT = true;
         }
         return db;
-    } else {
-      throw new AppError('Not in Cloudflare environment', 500);
     }
+    return null;
 }

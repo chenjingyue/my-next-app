@@ -1,6 +1,6 @@
 // src/db/index.js
-
 import AppError from "../utils/AppError.js";
+import {getDB} from "./d1.js";
 
 let sqliteInstance = null;
 
@@ -15,6 +15,12 @@ export function setDB(db) {
  */
 export async function getDB(c) {
     if (!sqliteInstance) {
+        // 判断cloudflare的环境
+        const db = getDB();
+        if (!db){
+            sqliteInstance = db;
+            return sqliteInstance;
+        }
         throw new AppError('DB instance not initialized', 500);
     }
     return sqliteInstance;
