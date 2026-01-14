@@ -1,6 +1,6 @@
 // src/db/index.js
 import AppError from "../utils/AppError.js";
-import {getDB} from "./d1.js";
+import {createD1} from "./d1.js";
 
 let sqliteInstance = null;
 
@@ -16,7 +16,7 @@ export function setDB(db) {
 export async function getDB(c) {
     if (!sqliteInstance) {
         // 判断cloudflare的环境
-        const db = getDB();
+        const db = createD1();
         if (!db){
             sqliteInstance = db;
             return sqliteInstance;

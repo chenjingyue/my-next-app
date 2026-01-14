@@ -11,7 +11,7 @@ function initTables(db) {
       `);
 }
 
-export function getDB(c) {
+export function createD1(c) {
     // 🌩️ Cloudflare 环境（包括 wrangler dev）
     console.log("c?.env?.RUNTIME: ",c?.env?.RUNTIME)
     if (c?.env?.RUNTIME === 'cloudflare') {
