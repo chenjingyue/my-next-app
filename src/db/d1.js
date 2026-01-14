@@ -18,6 +18,7 @@ export function createD1(c) {
     console.log("c?.env?.RUNTIME: ",c?.env?.RUNTIME)
     if (c?.env?.RUNTIME === 'cloudflare') {
         const db = c.env.MY_DATABASE;
+        console.log("start globalThis: ",globalThis._D1_INIT)
         if (!globalThis._D1_INIT) {
             initTables(db);
             globalThis._D1_INIT = true;
