@@ -2,7 +2,7 @@
 
 async function  initTables(db) {
     console.log("start initTables: ")
-     db.exec(`
+    await db.exec(`
         CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username TEXT NOT NULL UNIQUE,
