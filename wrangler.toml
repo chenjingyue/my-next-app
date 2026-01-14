@@ -12,3 +12,7 @@ RUNTIME = "cloudflare"
 binding = "MY_DATABASE"
 database_name = "hono-db"
 database_id = "80cd979d-a4ad-4b42-a089-4d929a0dd6ab"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
