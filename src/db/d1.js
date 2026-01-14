@@ -1,6 +1,7 @@
 
 
 function initTables(db) {
+    console.log("start initTables: ")
     db.exec(`
         CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -9,6 +10,7 @@ function initTables(db) {
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
       `);
+    console.log("end initTables: ")
 }
 
 export function createD1(c) {
